@@ -1,6 +1,6 @@
 # doc2struct harness
 
-doc2struct is pretty good, and very cheap to run. LLMs are expensive. This is a harness to get the accuracy of LLMs, at a cheaper cost.
+doc2struct is pretty good, and very cheap to run. LLMs are expensive. This is a harness to get the accuracy of LLMs, at a cheaper cost. [Article](https://datamule.xyz/articles/opensourcing-a-cheap-document-harness/)
 
 ## Benchmarks
 
