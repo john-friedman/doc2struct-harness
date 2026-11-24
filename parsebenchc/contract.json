@@ -1,0 +1,17 @@
+{
+  "parse_bench_version": "2.1.1",
+  "modules": {
+    "parse_bench.evaluation.metrics.parse.text_next": "cbb2e028d1c367565b443da73facd297c178bed61ba976a8605cf91448857dab",
+    "parse_bench.evaluation.metrics.parse.formatting_v2": "1abd20a0648290d69c0adee5219124372fbc257bb9866ef40567a03490e39f11",
+    "parse_bench.evaluation.metrics.parse.forms_v2": "15b58b8cfa47a6a336cdbc667b7e28f03f730de80352ef0643f6daacde378ed2",
+    "parse_bench.evaluation.metrics.parse.table_next": "39001ec5a882bfa626db291192a91c412fe2331d589b75eda65b5f4e46ca46e8",
+    "parse_bench.evaluation.metrics.parse.chart_next": "2d25745174b8a5756a38cc34318e13c9cfb54203d2e7e15122856c2ebcbed56d"
+  },
+  "runtime": "standalone C11; no CPython",
+  "scoring_scope": [
+    "text_next",
+    "formatting_v2",
+    "table_next",
+    "forms_v2"
+  ]
+}

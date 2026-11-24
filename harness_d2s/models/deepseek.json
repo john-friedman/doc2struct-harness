@@ -1,0 +1,7 @@
+{
+  "model": "deepseek/deepseek-v4.1-flash-1017",
+  "provider": {"only": ["fireworks"], "allow_fallbacks": false},
+  "reasoning": {"effort": "low"},
+  "service_tier": "default",
+  "document_input": "images"
+}

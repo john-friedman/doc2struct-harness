@@ -1,0 +1,4 @@
+{
+  "model": "typesafe/jev-1.14",
+  "provider": {"only": ["typesafe"], "allow_fallbacks": false}
+}

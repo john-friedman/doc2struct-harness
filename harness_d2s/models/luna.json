@@ -1,0 +1,6 @@
+{
+  "model": "openai/gpt-6-luna",
+  "provider": {"only": ["openai"], "allow_fallbacks": false},
+  "reasoning": {"effort": "low"},
+  "service_tier": "default"
+}

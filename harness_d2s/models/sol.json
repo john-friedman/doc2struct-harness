@@ -1,0 +1,6 @@
+{
+  "model": "openai/gpt-6.2-sol",
+  "provider": {"only": ["openai"], "allow_fallbacks": false},
+  "reasoning": {"effort": "low"},
+  "service_tier": "default"
+}

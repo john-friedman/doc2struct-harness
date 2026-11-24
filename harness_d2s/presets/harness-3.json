@@ -1,0 +1,14 @@
+{
+  "pipeline": "judge",
+  "dpi": 144,
+  "judge_threshold": 0.30,
+  "judge_model": "jev",
+  "judge_prompt_file": "harness-3-judge.txt",
+  "prompt_file": "harness-3-model.txt",
+  "tools": ["submit_grid"],
+  "max_output_tokens": 32768,
+  "context_format": "edit",
+  "rules": "PDF:PARSEBENCH",
+  "repair_concurrency": 4,
+  "prompt_cache_options": {"mode": "explicit", "ttl": "30m"}
+}

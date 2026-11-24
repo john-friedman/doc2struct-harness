@@ -1,0 +1,110 @@
+ParseBench C scorer
+==================
+
+This is an independent C11 executable. Scoring, JSON input/output, filesystem
+discovery, worker scheduling, Unicode normalization, regex matching, alignment,
+table matching and weighted aggregation run in C. There is no Python runtime,
+CPython extension, Python worker, or import of parse_bench during scoring.
+
+Run from the repository root:
+
+    parsebenchc/build/standalone/parsebenchc.exe score RESULTS REFERENCES scores.json
+
+RESULTS contains the existing *.result.json files, recursively. REFERENCES
+contains SUBSET/EXAMPLE.test.json annotations. The request.example_id selects
+the annotation. The references/ directory inside RESULTS is skipped. PDFs
+are not opened. Existing result and reference files are read only.
+
+For the complete local run:
+
+    parsebenchc/build/standalone/parsebenchc.exe score runs/luna_low_full/20261119T082154Z/score runs/luna_low_full/20261119T082154Z/score/references parsebenchc/build/scores.json 24
+
+An optional last argument selects workers (1-32). The default detects the CPU
+count, capped at 32. On this 24-thread machine, 24 workers outperformed 12 and
+32. Output order is deterministic regardless of scheduling.
+
+The JSON report contains per-document headline scores and every numeric lane,
+weighted dimension means, timing, and errors. Unscorable outputs produce the
+same failure as Python and pad the subset's score denominator with zero.
+Exit status: 0 = all scored, 1 = report includes failures, 2 = command/input
+failure. A report with the local corpus's two unscorable outputs returns 1.
+
+Build
+-----
+
+    python parsebenchc/build.py
+
+This convenience build script uses only Python's standard library. It compiles
+checked-in C; it does not import ParseBench or use Python headers/libraries.
+Windows needs Visual Studio x64 C++ Build Tools with the C compiler. The build
+copies PCRE2's native DLL from the installed Git distribution beside the EXE.
+Keep parsebenchc.exe and libpcre2-8-0.dll together when copying the executable.
+
+Alternatively build entirely with CMake and a C compiler:
+
+    cmake -S parsebenchc -B parsebenchc/build/cmake
+    cmake --build parsebenchc/build/cmake --config Release --parallel
+
+For Visual Studio, the resulting executable is under build/cmake/Release/.
+The Windows x64 build is verified with both methods. A POSIX pthread build path
+is included but has not been tested here; it needs the native PCRE2 library.
+utf8proc Unicode tables are vendored. Third-party notices are in licenses/.
+
+There is an optional launcher:
+
+    python -m parsebenchc score RESULTS REFERENCES scores.json 24
+
+It starts the executable; it does not perform any scoring in Python. The C
+input is ParseBench's native JSON, as used by the existing evaluator. Converting
+the harness's standardized Parquet rows remains a separate input-preparation
+step; this executable does not read Parquet.
+
+Scoring contract
+----------------
+
+The supported suite is the local 11 subsets and four headline families:
+text_next, formatting_v2, table_next, forms_v2, including their numeric lanes,
+applicability rules, decorations, sub-page handling, and table flags. The
+weighted dimension formulas match ParseBench 2.1.1. Charts and layout are
+outside this local suite and are rejected explicitly if supplied. Those two
+dimensions, and therefore the upstream six-dimension next_score, remain null.
+Legacy form_kv diagnostics, rule metrics, explanation metadata, and HTML/CSV
+report rendering are not part of this headline-scoring executable.
+
+Policy branches are lowered once into standalone/generated/scorers.c. Hot paths
+use typed C implementations: bit/row LCS, exact tiling, form tokenization and
+caption matching, formatting tokens/styles, table scanning, cell assignment,
+row pairing, and cached normalization. Scratch arrays, compact records, bounded
+per-document caches and native threads replace Python allocation/dispatch.
+Source hashes in contract.json freeze the policy being preserved.
+
+Only maintainers regenerating policy C need the pinned ParseBench installation:
+
+    python parsebenchc/build.py --regenerate
+
+Changed upstream source hashes abort regeneration until the scoring contract
+is deliberately reviewed and updated. Normal builds need no Python packages.
+
+Validation and performance
+--------------------------
+
+    .venv/Scripts/python.exe -X utf8 -m unittest discover -s parsebenchc/tests -v
+    .venv/Scripts/python.exe -X utf8 parsebenchc/standalone/compare_report.py runs/luna_low_full/20261119T082154Z/score parsebenchc/build/scores.json
+    .venv/Scripts/python.exe parsebenchc/tools/benchmark_native.py runs/luna_low_full/20261119T082154Z/score runs/luna_low_full/20261119T082154Z/score/references --workers 24 --repeat 3
+
+The full local corpus has 3,214 outputs. Every headline, every numeric lane,
+both unscorable failures, and all weighted dimensions match the unmodified
+Python reference exactly. One result absent from the saved Python reports is
+scored afresh by the validator. Randomized differential tests cover alignment
+ties, large-gap slicing, Unicode, numeric units/footnotes, malformed tables,
+row assignment, styles, forms, long UTF-8 paths and worker error isolation.
+
+Measured complete-command time was about 17.0 seconds using 24 C workers,
+including input discovery, JSON loading and the JSON report. This is the whole
+3,214-output local suite; the suggested ten-second target has not been reached.
+Measurements and the exact comparison are under build/final_benchmark.json
+and its final_benchmark_runs/ directory. Benchmarks do not read prior scores.
+
+PARSEBENCHC_TRACE=1 logs per-job timings. PARSEBENCHC_PROFILE=1 reports native
+function time/allocation counts. PARSEBENCHC_NO_CACHE=1 disables generic caches
+for diagnosis. These are development options; none is needed for normal runs.

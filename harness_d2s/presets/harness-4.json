@@ -1,0 +1,29 @@
+{
+  "pipeline": "judge_edits",
+  "dpi": 144,
+  "judge_threshold": 0.3,
+  "judge_model": "jev",
+  "judge_prompt_file": "harness-3-judge.txt",
+  "prompt_file": "harness-4-model.txt",
+  "tools": [
+    "compact_edits"
+  ],
+  "max_output_tokens": 32768,
+  "context_format": "edit",
+  "rules": "PDF:PARSEBENCH",
+  "repair_concurrency": 4,
+  "prompt_cache_options": {
+    "mode": "explicit",
+    "ttl": "30m"
+  },
+  "crop_padding": 0.025,
+  "min_crop_height": 0.12,
+  "merge_overlap": 0.2,
+  "safe_insertions": true,
+  "empty_draft_direct": true,
+  "repair_max_side": 1024,
+  "empty_max_side": 2048,
+  "repair_min_scale": 0.6666666666666666,
+  "table_min_column_pixels": 40,
+  "merge_gap_chars": 1500
+}
